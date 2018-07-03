@@ -20,7 +20,8 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
             public uint HTileMask;
         };
 
-        [GenerateHLSL(PackingRules.Exact)]
+        // Note: define here the maximum number of DBuffer allowed, however the shader will decide how many it is really used
+        // so we don't generate hlsl value for this one
         public enum DBufferMaterial
         {           
             Count = 4

@@ -106,10 +106,10 @@ void AddDecalContribution(PositionInputs posInput, inout SurfaceData surfaceData
 
 #ifdef _SURFACE_TYPE_TRANSPARENT    // forward transparent using clustered decals
         uint decalCount, decalStart;
-        DBuffer0 = float4(0.0f, 0.0f, 0.0f, 1.0f);
-        DBuffer1 = float4(0.5f, 0.5f, 0.5f, 1.0f);
-        DBuffer2 = float4(0.0f, 0.0f, 0.0f, 1.0f);
-		DBuffer3 = float2(1.0f, 1.0f);
+        DBuffer0 = float4(0.0, 0.0, 0.0, 1.0);
+        DBuffer1 = float4(0.5, 0.5, 0.5, 1.0);
+        DBuffer2 = float4(0.0, 0.0, 0.0, 1.0);
+		DBuffer3.xy = float2(1.0, 1.0);
 
     #ifdef LIGHTLOOP_TILE_PASS
         GetCountAndStart(posInput, LIGHTCATEGORY_DECAL, decalStart, decalCount);
@@ -188,7 +188,7 @@ void AddDecalContribution(PositionInputs posInput, inout SurfaceData surfaceData
 				float normalBlend = albedoBlend;
 				if ((decalData.maskScaleBias.x > 0) && (decalData.maskScaleBias.y > 0))
 				{
-					ApplyBlendMask(DBuffer2, DBuffer3, mask, sampleMask, DBUFFERHTILEBIT_MASK, albedoBlend, lodMask, decalData.normalToWorld[0][3], normalBlend, decalData.blendParams);
+					ApplyBlendMask(DBuffer2, DBuffer3.xy, mask, sampleMask, DBUFFERHTILEBIT_MASK, albedoBlend, lodMask, decalData.normalToWorld[0][3], normalBlend, decalData.blendParams);
 				}
 
                 if ((decalData.normalScaleBias.x > 0) && (decalData.normalScaleBias.y > 0))

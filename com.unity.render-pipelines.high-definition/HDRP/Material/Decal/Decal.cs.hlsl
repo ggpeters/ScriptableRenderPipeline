@@ -14,11 +14,6 @@
 #define DEBUGVIEW_DECAL_DECALSURFACEDATA_HTILE_MASK (204)
 
 //
-// UnityEngine.Experimental.Rendering.HDPipeline.Decal+DBufferMaterial:  static fields
-//
-#define DBUFFERMATERIAL_COUNT (4)
-
-//
 // UnityEngine.Experimental.Rendering.HDPipeline.Decal+DBufferHTileBit:  static fields
 //
 #define DBUFFERHTILEBIT_DIFFUSE (1)
@@ -48,38 +43,6 @@ struct DecalData
     float4 baseColor;
     float3 blendParams;
 };
-
-//
-// Accessors for UnityEngine.Experimental.Rendering.HDPipeline.DecalData
-//
-float4x4 GetWorldToDecal(DecalData value)
-{
-    return value.worldToDecal;
-}
-float4x4 GetNormalToWorld(DecalData value)
-{
-    return value.normalToWorld;
-}
-float4 GetDiffuseScaleBias(DecalData value)
-{
-    return value.diffuseScaleBias;
-}
-float4 GetNormalScaleBias(DecalData value)
-{
-    return value.normalScaleBias;
-}
-float4 GetMaskScaleBias(DecalData value)
-{
-    return value.maskScaleBias;
-}
-float4 GetBaseColor(DecalData value)
-{
-    return value.baseColor;
-}
-float3 GetBlendParams(DecalData value)
-{
-    return value.blendParams;
-}
 
 //
 // Debug functions
