@@ -56,6 +56,25 @@ void ApplyDebug(LightLoopContext lightLoopContext, float3 positionWS, inout floa
 #endif
 }
 
+bool IsMatchingLightLayer(int lightLayers, BSDFData bsdfData)
+{
+// #ifdef ENABLE_LIGHT_LAYERS
+    int rendererLayers;
+#if SHADERPASS == SHADERPASS_DEFERRED_LIGHTING
+    // value come from GBuffer
+    //rendererLayers = bsdfData.rendererLayers;
+    rendererLayers = 0xFF;
+#else // Forward
+    // Use uniform directly - The float need to be cast to uint (as unity don't support to set a uint as uniform)
+    rendererLayers = asuint(unity_RenderingLayer.x);
+#endif
+    return (rendererLayers & lightLayers) != 0;
+//#else
+//    return true;
+// #endif
+}
+
+
 // bakeDiffuseLighting is part of the prototype so a user is able to implement a "base pass" with GI and multipass direct light (aka old unity rendering path)
 void LightLoop( float3 V, PositionInputs posInput, PreLightData preLightData, BSDFData bsdfData, BakeLightingData bakeLightingData, uint featureFlags,
                 out float3 diffuseLighting,
@@ -77,8 +96,11 @@ void LightLoop( float3 V, PositionInputs posInput, PreLightData preLightData, BS
     {
         for (i = 0; i < _DirectionalLightCount; ++i)
         {
-            DirectLighting lighting = EvaluateBSDF_Directional(context, V, posInput, preLightData, _DirectionalLightDatas[i], bsdfData, bakeLightingData);
-            AccumulateDirectLighting(lighting, aggregateLighting);
+            if (IsMatchingLightLayer(_DirectionalLightDatas[i].lightLayers, bsdfData))
+            {
+                DirectLighting lighting = EvaluateBSDF_Directional(context, V, posInput, preLightData, _DirectionalLightDatas[i], bsdfData, bakeLightingData);
+                AccumulateDirectLighting(lighting, aggregateLighting);
+            }
         }
     }
 
@@ -97,8 +119,11 @@ void LightLoop( float3 V, PositionInputs posInput, PreLightData preLightData, BS
         {
             LightData lightData = FetchLight(lightStart, i);
 
-            DirectLighting lighting = EvaluateBSDF_Punctual(context, V, posInput, preLightData, lightData, bsdfData, bakeLightingData);
-            AccumulateDirectLighting(lighting, aggregateLighting);
+            if (IsMatchingLightLayer(lightData.lightLayers, bsdfData))
+            {
+                DirectLighting lighting = EvaluateBSDF_Punctual(context, V, posInput, preLightData, lightData, bsdfData, bakeLightingData);
+                AccumulateDirectLighting(lighting, aggregateLighting);
+            }
         }
     }
 
@@ -129,8 +154,11 @@ void LightLoop( float3 V, PositionInputs posInput, PreLightData preLightData, BS
             {
                 lightData.lightType = GPULIGHTTYPE_LINE; // Enforce constant propagation
 
-                DirectLighting lighting = EvaluateBSDF_Area(context, V, posInput, preLightData, lightData, bsdfData, bakeLightingData);
-                AccumulateDirectLighting(lighting, aggregateLighting);
+                if (IsMatchingLightLayer(lightData.lightLayers, bsdfData))
+                {
+                    DirectLighting lighting = EvaluateBSDF_Area(context, V, posInput, preLightData, lightData, bsdfData, bakeLightingData);
+                    AccumulateDirectLighting(lighting, aggregateLighting);
+                }
 
                 lightData = FetchLight(lightStart, min(++i, last));
             }
@@ -139,8 +167,11 @@ void LightLoop( float3 V, PositionInputs posInput, PreLightData preLightData, BS
             {
                 lightData.lightType = GPULIGHTTYPE_RECTANGLE; // Enforce constant propagation
 
-                DirectLighting lighting = EvaluateBSDF_Area(context, V, posInput, preLightData, lightData, bsdfData, bakeLightingData);
-                AccumulateDirectLighting(lighting, aggregateLighting);
+                if (IsMatchingLightLayer(lightData.lightLayers, bsdfData))
+                {
+                    DirectLighting lighting = EvaluateBSDF_Area(context, V, posInput, preLightData, lightData, bsdfData, bakeLightingData);
+                    AccumulateDirectLighting(lighting, aggregateLighting);
+                }
 
                 lightData = FetchLight(lightStart, min(++i, last));
             }
