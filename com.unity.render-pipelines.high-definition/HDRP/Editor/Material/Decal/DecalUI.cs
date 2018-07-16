@@ -19,6 +19,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             public static GUIContent decalBlendText = new GUIContent("Decal Blend", "Whole decal blend");
             public static GUIContent BlendText = new GUIContent("Decal Blend", "Whole decal blend");
             public static GUIContent AlbedoModeText = new GUIContent("Albedo contribution", "Base color + Blend, Blend only");
+            public static GUIContent MeshDecalDepthBiasText = new GUIContent("Mesh decal depth bias", "prevents z-fighting");
         }
 
         enum BlendSource
@@ -66,6 +67,9 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         protected MaterialProperty maskmapSmoothness = new MaterialProperty();
         protected const string kMaskmapSmoothness = "_MaskmapSmoothness";
 
+        protected MaterialProperty decalMeshDepthBias = new MaterialProperty();
+        protected const string kDecalMeshDepthBias = "_DecalMeshDepthBias";
+
         protected MaterialEditor m_MaterialEditor;
 
         // This is call by the inspector
@@ -84,6 +88,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             maskmapMetal = FindProperty(kMaskmapMetal, props);
             maskmapAO = FindProperty(kMaskmapAO, props);
             maskmapSmoothness = FindProperty(kMaskmapSmoothness, props);
+            decalMeshDepthBias = FindProperty(kDecalMeshDepthBias, props);
             
             // always instanced
             SerializedProperty instancing = m_MaterialEditor.serializedObject.FindProperty("m_EnableInstancingVariants");
@@ -218,6 +223,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                     }
                 }
                 m_MaterialEditor.ShaderProperty(decalBlend, Styles.decalBlendText);
+                m_MaterialEditor.ShaderProperty(decalMeshDepthBias, Styles.MeshDecalDepthBiasText);
                 EditorGUI.indentLevel--;
             }
 
